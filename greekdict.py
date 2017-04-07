@@ -1826,7 +1826,7 @@ def handle_page(_, page):
           #print u'{} -> {} ({})'.format(w, key, u', '.join(c2)).encode('utf-8')
           if key not in word_graph[w]:
             word_graph[w].append(key)
-          part_of_speech[key] += c2
+          part_of_speech[w].append(c2)
           found = True
     found = found or find_redirections(key, sections[u'{{-el-}}'])
   if not found: # no pattern
