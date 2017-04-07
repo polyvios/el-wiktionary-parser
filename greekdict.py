@@ -57,7 +57,7 @@ word_graph = WikiWordGraph('word_graph.pickle')
 nominative = word_graph[u'νερών']
 pos = word_graph.get_pos(u'νερών')
 # nominative = ['νερό']
-# pos = ['Ουσ']
+# pos = [[γενική, πληθυντικός, ουδ], Ουσ]
 '''
 
 class WikiWordGraph(object):
