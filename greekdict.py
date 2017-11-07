@@ -43,7 +43,8 @@ import optparse
 import xmltodict
 from sets import Set
 from collections import defaultdict
-from cPickle import dump as pickle_dump, load as pickle_load
+#from cPickle import dump as pickle_dump, load as pickle_load
+import json
 
 # Wrapper object for wiktionary data
 # Apply it to a word to get the "root" form.
@@ -53,7 +54,7 @@ from cPickle import dump as pickle_dump, load as pickle_load
 # Use like this:
 '''
 from greekdict import WikiWordGraph
-word_graph = WikiWordGraph('word_graph.pickle')
+word_graph = WikiWordGraph('word_graph.json')
 nominative = word_graph[u'νερών']
 pos = word_graph.get_pos(u'νερών')
 # nominative = ['νερό']
@@ -62,8 +63,8 @@ pos = word_graph.get_pos(u'νερών')
 
 class WikiWordGraph(object):
   def __init__(self, word_graph_filename):
-    with open(word_graph_filename, 'r') as f:
-      self.word_graph, self.part_of_speech = pickle_load(f)
+    with open(word_graph_filename, 'rb') as f:
+      self.word_graph, self.part_of_speech = json.load(f)
     self.words = [x for x in self.word_graph.keys()]
     self.accnt = {}
     for v in self.words:
@@ -71,7 +72,13 @@ class WikiWordGraph(object):
       self.accnt[k] = self.accnt.get(k, [])
       self.accnt[k].append(v)
   def get_pos(self, word):
-    return self.part_of_speech.get(word, None)
+    if word in self.part_of_speech: 
+      return self.part_of_speech[word]
+    if word.lower() in self.part_of_speech:
+      return self.part_of_speech[word.lower()]
+    k = deaccent(word)
+    if k in self.accnt: return [x for y in self.accnt[k] for x in self.part_of_speech.get(y, [])]
+    return []
   def __getitem__(self, word):
     if word in self.word_graph: return self.word_graph[word]
     if word.lower() in self.word_graph: return self.word_graph[word.lower()]
@@ -1844,15 +1851,15 @@ def handle_page(_, page):
 
 if __name__ == u'__main__':
   parser = optparse.OptionParser(usage="Usage: %prog [options] el-wiktionary.xml")
-  parser.add_option("-o", "--output", action="store", dest="output", default=u'word_graph.pickle', help="Where to store pickled word graph.")
+  parser.add_option("-o", "--output", action="store", dest="output", default=u'word_graph.json', help="Where to store word graph.")
   (options, args) = parser.parse_args()
   if len(args) == 0:
     parser.print_help()
     sys.exit(1)
   with codecs.open(args[0], 'r', 'utf-8') as f:
     d = xmltodict.parse(f.read(), item_depth=2, item_callback=handle_page)
-  with open(options.output, 'w') as f:
-    pickle_dump((word_graph, part_of_speech), f)
+  with open(options.output, 'wb') as f:
+    json.dump((word_graph, part_of_speech), f)
 
 
 
