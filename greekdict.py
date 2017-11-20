@@ -1866,7 +1866,7 @@ def handle_page(_, page):
         if pospattern in text:
           #print u'{}({})'.format(pos[pospattern], key).encode('utf-8')
           part_of_speech[key].append(pos[pospattern])
-      for pospattern, posresult in pos_cases.iteritems:
+      for pospattern, posresult in pos_cases.iteritems():
         if pospattern in text:
           if set(posresult) <= set(part_of_speech[key]):
             part_of_speech[key].extend(posresult)
