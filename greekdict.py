@@ -1866,10 +1866,10 @@ def handle_page(_, page):
         if pospattern in text:
           #print u'{}({})'.format(pos[pospattern], key).encode('utf-8')
           part_of_speech[key].append(pos[pospattern])
-      for pospattern, pos in pos_cases.iteritems:
+      for pospattern, posresult in pos_cases.iteritems:
         if pospattern in text:
-          if set(pos) <= set(part_of_speech[key]):
-            part_of_speech[key].extend(pos)
+          if set(posresult) <= set(part_of_speech[key]):
+            part_of_speech[key].extend(posresult)
       if pattern is not None:
         stem = find_stem(key, pattern.values(), argdict)
         if not stem or stem == key:
