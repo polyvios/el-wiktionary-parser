@@ -1907,6 +1907,7 @@ if __name__ == u'__main__':
     d = xmltodict.parse(f.read(), item_depth=2, item_callback=handle_page)
   with open(options.output, 'wb') as f:
     json.dump((word_graph, part_of_speech), f)
+  print "Found {} lemmas {} pos characterizations".format(len(word_graph), len(part_of_speech))
 
 
 
