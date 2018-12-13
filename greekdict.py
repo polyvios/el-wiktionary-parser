@@ -1683,7 +1683,7 @@ def apply_pattern(stem, pattern, args, in_prefix=True):
     else:
       result.extend(x for x in apply_pattern(stem, args.get(var, val), args, False) if x != stem)
     pattern = pattern[until:]
-    return [w for x in result for w in apply_pattern(x, pattern[1:], args, in_prefix)]
+    return [w for x in set(result) for w in apply_pattern(x, pattern[1:], args, in_prefix)]
   elif char == u'S' and u'σ' in args:
     stem = stem[:-delchars] + args[u'σ']
   elif char == u'?':
@@ -1697,7 +1697,7 @@ def apply_pattern(stem, pattern, args, in_prefix=True):
       if in_prefix: stem = char + stem
       else: stem += char
   result.append(stem)
-  return [w for x in result for w in apply_pattern(x, pattern[1:], args, in_prefix)]
+  return [w for x in set(result) for w in apply_pattern(x, pattern[1:], args, in_prefix)]
 
 
 def apply_patterns(stem, pattern, args):
