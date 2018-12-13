@@ -6,7 +6,7 @@ To use:
 # #1. Download one of the el.wiktionary.org monthly dumps.
 ```bash
 wget https://dumps.wikimedia.org/elwiktionary/latest/elwiktionary-latest-pages-articles-multistream.xml.bz2
-bunzip elwiktionary-latest-pages-articles-multistream.xml.bz2
+bunzip2 elwiktionary-latest-pages-articles-multistream.xml.bz2
 ```
 # #2. To create the `word_graph.json` file with all words, run
 ```bash
