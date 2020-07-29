@@ -1853,6 +1853,7 @@ def handle_page(_, page):
   if u'title' not in page: return True
   key = page[u'title']
   if ":" in key or ' ' in key: return True
+  if key[0] == u'-': return True  #ignore ending lemmas
   text = page[u'revision'][u'text'].get('#text')
   if not text: return True
   found = False
@@ -1880,6 +1881,7 @@ def handle_page(_, page):
         if not stem or stem == key:
           #print u"Guessing stem from key {} {}".format(key, stem).encode('utf-8')
           stem = key[:-1]
+        #print stem
         words.extend(apply_patterns(stem, pattern, argdict))
         for c, w in words:
           c2 = [ x for x in c if isinstance(x, unicode) ]
