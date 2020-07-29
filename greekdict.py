@@ -1853,6 +1853,7 @@ def handle_page(_, page):
   if u'title' not in page: return True
   key = page[u'title']
   if ":" in key or ' ' in key: return True
+  if key[0] == u'-': return True  #ignore ending lemmas
   text = page[u'revision'][u'text'].get('#text')
   if not text: return True
   found = False
