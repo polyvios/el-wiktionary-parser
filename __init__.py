@@ -6,4 +6,4 @@
 ###########################################
 
 __all__ = ['greekdict']
-from greekdict import WikiWordGraph
+from greekdict.greekdict import WikiWordGraph
