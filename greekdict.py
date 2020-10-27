@@ -1881,6 +1881,7 @@ def handle_page(_, page):
         if not stem or stem == key:
           #print(u"Guessing stem from key {} {}".format(key, stem).encode('utf-8'))
           stem = key[:-1]
+        #print stem
         words.extend(apply_patterns(stem, pattern, argdict))
         for c, w in words:
           c2 = [ x for x in c if isinstance(x, str) ]
