@@ -1,11 +1,11 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 ##########################################################################
 #                                                                        #
 # The MIT License (MIT)                                                  #
 #                                                                        #
-# Copyright (c) 2016-2017 Polyvios Pratikakis <polyvios@gmail.com>       #
+# Copyright (c) 2016-2020 Polyvios Pratikakis <polyvios@gmail.com>       #
 #                                                                        #
 # Permission is hereby granted, free of charge, to any person            #
 # obtaining a copy of this software and associated documentation files   #
@@ -41,8 +41,8 @@ import re
 import codecs
 import optparse
 import xmltodict
-from sets import Set
 from collections import defaultdict
+from bz2 import BZ2File
 #from cPickle import dump as pickle_dump, load as pickle_load
 import json
 
@@ -123,7 +123,7 @@ deaccent_bigrams = {
   u'Έυ' : u'Εϋ'
 }
 
-accent_bigrams = {v: k for k, v in deaccent_bigrams.iteritems()}
+accent_bigrams = {v: k for k, v in deaccent_bigrams.items()}
 
 deaccent_letters = {
   u'ά' : u'α',
@@ -145,7 +145,7 @@ deaccent_letters = {
   u'ΰ' : u'ϋ'
 }
 
-accent_letters = {v: k for k, v in deaccent_letters.iteritems()}
+accent_letters = {v: k for k, v in deaccent_letters.items()}
 
 noun_voices = [ u'ονομαστική', u'γενική', u'αιτιατική', u'κλητική', u'ονομαστική', u'γενική', u'αιτιατική', u'κλητική'] 
 noun_numbers = [ u'ενικός', u'ενικός', u'ενικός', u'ενικός', u'πληθυντικός', u'πληθυντικός', u'πληθυντικός', u'πληθυντικός' ]
@@ -174,15 +174,15 @@ persons = [ u'πρώτο', u'δεύτερο', u'τρίτο',  u'πρώτο', u'�
 number = [ u'ενικός', u'ενικός', u'ενικός', u'πληθυντικός', u'πληθυντικός', u'πληθυντικός' ]
 
 declination_list_orders = {
-  u'Ουσ' : zip(noun_voices, noun_numbers),
-  u'αρσ' : zip(noun_voices, noun_numbers),
-  u'θηλ' : zip(noun_voices, noun_numbers),
-  u'ουδ' : zip(noun_voices, noun_numbers),
-  u'ενεστώτας'   : zip(persons, number),
-  u'παρατατικός' : zip(persons, number),
-  u'αόριστος'    : zip(persons, number),
-  u'παρατατικός' : zip(persons, number),
-  u'μέλλοντας'   : zip(persons, number),
+  u'Ουσ' : list(zip(noun_voices, noun_numbers)),
+  u'αρσ' : list(zip(noun_voices, noun_numbers)),
+  u'θηλ' : list(zip(noun_voices, noun_numbers)),
+  u'ουδ' : list(zip(noun_voices, noun_numbers)),
+  u'ενεστώτας'   : list(zip(persons, number)),
+  u'παρατατικός' : list(zip(persons, number)),
+  u'αόριστος'    : list(zip(persons, number)),
+  u'παρατατικός' : list(zip(persons, number)),
+  u'μέλλοντας'   : list(zip(persons, number)),
   u'παθητική'    : [],
   u'ενεργητική'  : [],
 }
@@ -477,7 +477,7 @@ def mpaino(args, pattern):
     for x in p:
       pattern.update(p[x])
     #del pattern[u'ενεστ']
-    #print "found pattern enest"
+    #print("found pattern enest")
 
 def default_args(d):
   def setter(args, pattern):
@@ -1618,7 +1618,7 @@ def find_stem(word, endings, args):
   if isinstance(endings, dict):
     endings = endings.values()
   for ending in endings:
-    if isinstance(ending, basestring):
+    if isinstance(ending, str):
       if u'-' in ending:
         ending = ending.split(u'-')[1]
       if u'=' in ending:
@@ -1657,7 +1657,7 @@ def apply_pattern(stem, pattern, args, in_prefix=True):
   elif char == u'(':
     result.append(stem + u'$')
   elif char == u'<' and u'συνίζ' in args:
-    for _ in xrange(0, int(args[u'συνίζ'])+1):
+    for _ in range(0, int(args[u'συνίζ'])+1):
       stem = accent_left(stem)
   elif char == u'<':
     stem = accent_left(stem)
@@ -1702,7 +1702,7 @@ def apply_pattern(stem, pattern, args, in_prefix=True):
 
 def apply_patterns(stem, pattern, args):
   if pattern is None: return []
-  if isinstance(pattern, basestring):
+  if isinstance(pattern, str):
     words = [([], args.get(u'προθ', u'') + w) for w in apply_pattern(stem, pattern, args)]
     return words
   elif isinstance(pattern, dict):
@@ -1764,10 +1764,10 @@ def parse_conj_args(result, args):
       argparts = a.split('=')
       result[argparts[0]] = argparts[1]
   numargs = [x for x in args if u'=' not in x]
-  for i in xrange(len(numargs)):
-    if unicode(i+1) in result:
-      print u'Args Conflict: {} {} {}'.format(i, result[unicode(i+1)], numargs[i]).encode('utf-8')
-    result[unicode(i+1)] = numargs[i]
+  for i in range(len(numargs)):
+    if str(i+1) in result:
+      print(u'Args Conflict: {} {} {}'.format(i, result[str(i+1)], numargs[i]).encode('utf-8'))
+    result[str(i+1)] = numargs[i]
   return
 
 conj_pattern_regexp = re.compile(u"\{\{el-κλίσ-'([^|']*)'([^\}]*)\}\}")
@@ -1792,7 +1792,7 @@ def get_conj_pattern(text):
   if m is None: return None, None
   patternword = m.group(1)
   args = m.group(2)
-  #print u'arguments to pattern: {} are {}'.format(patternword, args).encode('utf-8')
+  #print(u'arguments to pattern: {} are {}'.format(patternword, args).encode('utf-8'))
   argdict = {}
   if args: parse_conj_args(argdict, args.replace(u'(', u'').strip(' |').split('|'))
   for p in [noun_patterns, verb_patterns, adjective_patterns]:
@@ -1806,14 +1806,14 @@ def get_conj_pattern(text):
         if u'=' in p:
           del pattern[p]
       return pattern, argdict
-  #print u'Found referenced pattern: {}'.format(patternword).encode('utf-8')
+  #print(u'Found referenced pattern: {}'.format(patternword).encode('utf-8'))
   return None, None
 
 def get_generic_pattern(text):
   m = conj_pattern_generic_noun.search(text)
   if m is None: return None, None
   args = m.group(1)
-  #print u'arguments to pattern: {} are {}'.format(u'el-κλίσ-ουσ-ενπλ', args).encode('utf-8')
+  #print(u'arguments to pattern: {} are {}'.format(u'el-κλίσ-ουσ-ενπλ', args).encode('utf-8'))
   argdict = {}
   if args: parse_conj_args(argdict, args.replace(u'(', u'').strip(' |').split('|'))
   return conj_generic_pattern, argdict
@@ -1843,7 +1843,7 @@ def find_redirections(key, lines, depth=3):
     m = conj_form_regexp.search(l)
     if m:
       w = m.group(2)
-      #print u'synonym: {} -> {}'.format(key, m.group(2)).encode('utf-8')
+      #print(u'synonym: {} -> {}'.format(key, m.group(2)).encode('utf-8'))
       if w not in word_graph[key]:
         word_graph[key].append(w)
       res = True
@@ -1860,7 +1860,7 @@ def handle_page(_, page):
   sections = split_sections(text.split('\n'))
   tgt = get_redirect(u''.join(text))
   if tgt and ':' not in tgt:
-    #print u'{} -> {}'.format(key, tgt).encode('utf-8')
+    #print(u'{} -> {}'.format(key, tgt).encode('utf-8'))
     if tgt not in word_graph[key]:
       word_graph[key].append(tgt)
     found = True
@@ -1870,21 +1870,21 @@ def handle_page(_, page):
       words = []
       for pospattern in pos:
         if pospattern in text:
-          #print u'{}({})'.format(pos[pospattern], key).encode('utf-8')
+          #print(u'{}({})'.format(pos[pospattern], key).encode('utf-8'))
           part_of_speech[key].append(pos[pospattern])
-      for pospattern, posresult in pos_cases.iteritems():
+      for pospattern, posresult in pos_cases.items():
         if pospattern in text:
           if not all(x in part_of_speech[key] for x in posresult):
             part_of_speech[key].extend(posresult)
       if pattern is not None:
         stem = find_stem(key, pattern.values(), argdict)
         if not stem or stem == key:
-          #print u"Guessing stem from key {} {}".format(key, stem).encode('utf-8')
+          #print(u"Guessing stem from key {} {}".format(key, stem).encode('utf-8'))
           stem = key[:-1]
         words.extend(apply_patterns(stem, pattern, argdict))
         for c, w in words:
-          c2 = [ x for x in c if isinstance(x, unicode) ]
-          #print u'{} -> {} ({})'.format(w, key, u', '.join(c2)).encode('utf-8')
+          c2 = [ x for x in c if isinstance(x, str) ]
+          #print(u'{} -> {} ({})'.format(w, key, u', '.join(c2)).encode('utf-8'))
           if key not in word_graph[w]:
             word_graph[w].append(key)
           part_of_speech[w].append(c2)
@@ -1893,7 +1893,7 @@ def handle_page(_, page):
   if not found: # no pattern
     for c in greek_letters:
       if c in key:
-        #print u'No pattern for lemma: {}'.format(key).encode('utf-8')
+        #print(u'No pattern for lemma: {}'.format(key).encode('utf-8'))
         break
   return True
 
@@ -1904,11 +1904,11 @@ if __name__ == u'__main__':
   if len(args) == 0:
     parser.print_help()
     sys.exit(1)
-  with codecs.open(args[0], 'r', 'utf-8') as f:
-    d = xmltodict.parse(f.read(), item_depth=2, item_callback=handle_page)
-  with open(options.output, 'wb') as f:
+  #with codecs.open(args[0], 'r', 'utf-8') as f:
+  d = xmltodict.parse(BZ2File(args[0]), encoding='utf-8', item_depth=2, item_callback=handle_page)
+  with open(options.output, 'w') as f:
     json.dump((word_graph, part_of_speech), f)
-  print "Found {} lemmas {} pos characterizations".format(len(word_graph), len(part_of_speech))
+  print("Found {} lemmas {} pos characterizations".format(len(word_graph), len(part_of_speech)))
 
 
 
